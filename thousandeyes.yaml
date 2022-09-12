@@ -45,7 +45,7 @@ spec:
         command: ["/sbin/my_init"]
         env:
         - name: TEAGENT_ACCOUNT_TOKEN
-          value: "bbf2pdr650xss2cwl7rgw54w8jwh8w2k"
+          value: "AG-here"
         - name: TEAGENT_INET
           value: "4"
       volumes:
