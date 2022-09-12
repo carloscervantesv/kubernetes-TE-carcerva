@@ -8,7 +8,7 @@ spec:
     matchLabels:
       app: te-agent
   serviceName: te-agent
-  replicas: 2
+  replicas: 1
   volumeClaimTemplates:
     - metadata:
         anotations:
