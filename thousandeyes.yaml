@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: te-agent
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: te-agent
+  serviceName: te-agent
+  replicas: 2
+  volumeClaimTemplates:
+    - metadata:
+        anotations:
+        name: agent-pv
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: local-storage
+        resources:
+          requests:
+            storage: 200Mi
+  template:
+    metadata:
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/agent: 'localhost/te-apparmor.cfg'
+      labels:
+        app: te-agent
+    spec:
+      securityContext:
+        seccompProfile:
+          type: Localhost
+          localhostProfile: 'te-seccomp.json'
+      containers:
+      - image: thousandeyes/enterprise-agent:latest
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: agent-pv
+          mountPath: /var/lib/te-agent
+        name: agent
+        securityContext:
+          allowPrivilegeEscalation: true
+          capabilities:
+            add: ["SYS_ADMIN", "NET_ADMIN"]
+        command: ["/sbin/my_init"]
+        env:
+        - name: TEAGENT_ACCOUNT_TOKEN
+          value: "bbf2pdr650xss2cwl7rgw54w8jwh8w2k"
+        - name: TEAGENT_INET
+          value: "4"
+      volumes:
+      - name: agent-pv
+        persistentVolumeClaim:
+          claimName: agent-pv
+          readOnly: false
